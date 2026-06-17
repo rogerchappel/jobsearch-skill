@@ -9,7 +9,8 @@
   "scripts": {
     "test": "node --test",
     "check": "node scripts/check.js",
-    "smoke": "node bin/jobsearch-skill.js fixtures/job-post.md --candidate fixtures/candidate-notes.md --format markdown"
+    "smoke": "node bin/jobsearch-skill.js fixtures/job-post.md --candidate fixtures/candidate-notes.md --format markdown",
+    "package:smoke": "npm pack --dry-run"
   },
   "keywords": [
     "agent-skill",
@@ -21,5 +22,9 @@
   "license": "MIT",
   "engines": {
     "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogerchappel/jobsearch-skill.git"
   }
 }

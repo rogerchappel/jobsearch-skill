@@ -10,7 +10,8 @@
     "test": "node --test",
     "check": "node scripts/check.js",
     "smoke": "node bin/jobsearch-skill.js fixtures/job-post.md --candidate fixtures/candidate-notes.md --format markdown",
-    "package:smoke": "npm pack --dry-run"
+    "package:smoke": "npm pack --dry-run",
+    "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke"
   },
   "keywords": [
     "agent-skill",
@@ -26,5 +27,18 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rogerchappel/jobsearch-skill.git"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/rogerchappel/jobsearch-skill/issues"
+  },
+  "homepage": "https://github.com/rogerchappel/jobsearch-skill#readme",
+  "files": [
+    "bin",
+    "src",
+    "fixtures",
+    "docs",
+    "SKILL.md",
+    "README.md",
+    "LICENSE"
+  ]
 }

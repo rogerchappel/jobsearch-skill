@@ -15,3 +15,4 @@ jobs:
       - run: npm test
       - run: npm run check
       - run: npm run smoke
+      - run: npm run package:smoke

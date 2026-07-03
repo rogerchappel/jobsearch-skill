@@ -38,11 +38,16 @@ Run the release-readiness gate before publishing or sharing an updated skill:
 
 ~~~bash
 npm run check
+npm run lint
 npm test
 npm run smoke
 npm run package:smoke
 npm run release:check
 ~~~
+
+`npm run lint` is the contributor-facing static check alias used by the release
+gate, and currently delegates to the same local package validation as
+`npm run check`.
 
 ## Limitations
 

@@ -11,7 +11,7 @@
     "check": "node scripts/check.js",
     "lint": "npm run check",
     "smoke": "node bin/jobsearch-skill.js fixtures/job-post.md --candidate fixtures/candidate-notes.md --format markdown",
-    "package:smoke": "npm pack --dry-run",
+    "package:smoke": "node scripts/package-smoke.js",
     "release:check": "npm run lint && npm test && npm run smoke && npm run package:smoke"
   },
   "keywords": [

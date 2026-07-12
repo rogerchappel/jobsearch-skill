@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { createApplicationBrief, parseJobPost, renderMarkdown } from '../src/index.js';
 
 test('parses job metadata and requirements', () => {
@@ -22,4 +23,14 @@ test('renders markdown brief', () => {
   const markdown = renderMarkdown(brief);
   assert.match(markdown, /# Application Brief/);
   assert.match(markdown, /Ask for explicit approval/);
+});
+
+test('CLI help exits cleanly with usage text', () => {
+  const result = spawnSync(process.execPath, ['bin/jobsearch-skill.js', '--help'], {
+    cwd: new URL('..', import.meta.url),
+    encoding: 'utf8'
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /Usage: jobsearch-skill/);
 });

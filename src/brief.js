@@ -24,11 +24,20 @@ export function createApplicationBrief(jobText, candidateText = '') {
 function findEvidence(requirement, candidate) {
   const tokens = keywords(requirement);
   const pool = [...candidate.skills, ...candidate.projects, ...candidate.proof];
-  return pool.filter(item => tokens.some(token => item.toLowerCase().includes(token))).slice(0, 3);
+  return pool.filter(item => {
+    const evidenceTokens = new Set(keywords(item));
+    return tokens.some(token => evidenceTokens.has(token));
+  }).slice(0, 3);
 }
 
+const genericWords = new Set([
+  'ability', 'demonstrated', 'excellent', 'experience', 'familiarity', 'knowledge',
+  'preferred', 'proficiency', 'required', 'skills', 'strong', 'using', 'with', 'work', 'working', 'years'
+]);
+
 function keywords(value) {
-  return value.toLowerCase().split(/[^a-z0-9+#]+/).filter(word => word.length > 3);
+  return value.toLowerCase().split(/[^a-z0-9+#]+/)
+    .filter(word => word.length > 3 && !genericWords.has(word));
 }
 
 function riskFlags(job, candidate) {

@@ -14,8 +14,22 @@ test('parses job metadata and requirements', () => {
 
 test('creates evidence-backed brief', () => {
   const brief = createApplicationBrief(fs.readFileSync('fixtures/job-post.md', 'utf8'), fs.readFileSync('fixtures/candidate-notes.md', 'utf8'));
-  assert.ok(brief.fitScore >= 75);
+  assert.equal(brief.fitScore, 75);
+  const communicationEvidence = brief.evidenceMap.find(item => item.requirement.startsWith('Communicate'));
+  assert.deepEqual(communicationEvidence.evidence, []);
+  assert.ok(brief.missingEvidence.includes('Communicate tradeoffs with product and engineering teams'));
   assert.ok(brief.riskFlags.some(flag => flag.includes('Candidate constraint')));
+});
+
+test('does not treat generic requirement language as evidence', () => {
+  const brief = createApplicationBrief(
+    '# Rust Engineer\nCompany: Example\n## Requirements\n- Experience with Rust\n## How to apply\n- Apply online',
+    'Skills:\n- JavaScript experience'
+  );
+
+  assert.equal(brief.fitScore, 0);
+  assert.deepEqual(brief.evidenceMap[0].evidence, []);
+  assert.deepEqual(brief.missingEvidence, ['Experience with Rust']);
 });
 
 test('renders markdown brief', () => {

@@ -7,8 +7,14 @@ const fieldPatterns = {
 export function parseJobPost(text) {
   const normalized = text.replace(/\r\n/g, '\n');
   const sections = collectSections(normalized);
-  const requirements = extractBullets(sections.requirements || sections.qualifications || normalized);
-  const responsibilities = extractBullets(sections.responsibilities || sections.role || '');
+  const requirements = extractBullets(firstSection(sections, [
+    'requirements',
+    'minimum-requirements',
+    'qualifications',
+    'minimum-qualifications',
+    'required-qualifications'
+  ]) || normalized);
+  const responsibilities = extractBullets(firstSection(sections, ['responsibilities', 'role']) || '');
   const instructions = extractInstructions(normalized);
   return {
     title: firstMatch(normalized, fieldPatterns.title) || 'Unknown role',
@@ -20,6 +26,10 @@ export function parseJobPost(text) {
     instructions,
     signals: detectSignals(normalized)
   };
+}
+
+function firstSection(sections, keys) {
+  return keys.map(key => sections[key]).find(section => section !== undefined);
 }
 
 function firstMatch(text, patterns) {

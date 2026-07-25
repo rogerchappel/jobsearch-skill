@@ -9,9 +9,23 @@ if (args.length === 0 || args.includes('--help')) {
 const jobPath = args[0];
 const candidatePath = valueAfter('--candidate');
 const format = valueAfter('--format') || 'markdown';
+if (!['markdown', 'json'].includes(format)) {
+  fail(`Unsupported --format "${format}". Expected markdown or json.`);
+}
 const jobText = fs.readFileSync(jobPath, 'utf8');
 const candidateText = candidatePath ? fs.readFileSync(candidatePath, 'utf8') : '';
 const brief = createApplicationBrief(jobText, candidateText);
 if (format === 'json') console.log(JSON.stringify(brief, null, 2));
 else console.log(renderMarkdown(brief));
-function valueAfter(flag) { const index = args.indexOf(flag); return index === -1 ? undefined : args[index + 1]; }
+function valueAfter(flag) {
+  const index = args.indexOf(flag);
+  if (index === -1) return undefined;
+  const value = args[index + 1];
+  if (!value || value.startsWith('--')) fail(`${flag} requires a value.`);
+  return value;
+}
+
+function fail(message) {
+  console.error(`Error: ${message}`);
+  process.exit(2);
+}

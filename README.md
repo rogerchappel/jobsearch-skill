@@ -32,6 +32,17 @@ responsibilities, requirements, and any location or compensation notes you want
 reflected in the brief. Candidate notes should be local evidence supplied by the
 user, not scraped profile data.
 
+Requirement bullets are read from `Requirements`, `Minimum Requirements`,
+`Qualifications`, `Minimum Qualifications`, or `Required Qualifications`
+level-two Markdown sections. Candidate notes accept `Skills`, `Projects`,
+`Constraints`, and `Proof`, `Evidence`, or `Supporting Evidence` as either
+Markdown headings (for example, `## Skills`) or colon-terminated headings (for
+example, `Skills:`).
+
+`--format` accepts only `markdown` (the default) or `json`. When `--format` or
+`--candidate` is supplied, it must be followed by a value; invalid or missing
+values produce an error and a nonzero exit.
+
 ## Verification
 
 Run the release-readiness gate before publishing or sharing an updated skill:

@@ -47,6 +47,35 @@ test('parses minimum qualifications without absorbing other sections', () => {
   assert.deepEqual(job.responsibilities, ['Operate services']);
 });
 
+for (const heading of ['Requirements', 'Qualifications']) {
+  test(`keeps an empty ${heading} section empty`, () => {
+    const job = parseJobPost([
+      '# Platform Engineer',
+      '## Responsibilities',
+      '- Operate services',
+      `## ${heading}`,
+      '## How to Apply',
+      '- Email resume@example.com'
+    ].join('\n'));
+
+    assert.deepEqual(job.requirements, []);
+    assert.deepEqual(job.responsibilities, ['Operate services']);
+  });
+}
+
+test('falls back to all bullets when no recognized requirements section exists', () => {
+  const job = parseJobPost([
+    '# Platform Engineer',
+    '- Five years with Kubernetes',
+    '- Experience operating services'
+  ].join('\n'));
+
+  assert.deepEqual(job.requirements, [
+    'Five years with Kubernetes',
+    'Experience operating services'
+  ]);
+});
+
 test('parses candidate notes under Markdown headings', () => {
   const notes = parseCandidateNotes([
     '## Skills',

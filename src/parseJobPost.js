@@ -13,7 +13,7 @@ export function parseJobPost(text) {
     'qualifications',
     'minimum-qualifications',
     'required-qualifications'
-  ]) || normalized);
+  ]) ?? normalized);
   const responsibilities = extractBullets(firstSection(sections, ['responsibilities', 'role']) || '');
   const instructions = extractInstructions(normalized);
   return {

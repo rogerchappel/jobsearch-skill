@@ -32,3 +32,19 @@ The format value is required when the flag is present and must be `markdown` or
 ~~~
 
 Colon-terminated headings such as `Skills:` remain supported.
+
+## Evidence Matching
+
+Matching uses shared distinctive tokens after lowercasing and removing broad
+terms. For example, this candidate evidence is a match for a `Python
+development` requirement because both contain `Python`:
+
+~~~markdown
+Projects:
+- Built Python services
+~~~
+
+`Java development` is not a match: `development` is ignored and the technology
+tokens differ. The matcher does not infer synonyms or related technologies, so
+the generated evidence map and missing-evidence list still require human
+review.

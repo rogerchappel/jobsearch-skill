@@ -42,6 +42,15 @@ treated as requirements. Candidate notes accept `Skills`, `Projects`,
 Markdown headings (for example, `## Skills`) or colon-terminated headings (for
 example, `Skills:`).
 
+Evidence matching is deterministic token matching, not semantic inference. A
+requirement matches a candidate skill, project, or proof item when they share
+at least one distinctive, case-insensitive token. Common qualifiers and broad
+terms such as `experience`, `skills`, and `development` are ignored, so `Java
+development` does not satisfy `Python development`; an item that mentions
+`Python` does. This intentionally conservative heuristic can miss synonyms,
+abbreviations, and related technologies, so review both matches and missing
+evidence rather than treating the fit score as a hiring decision.
+
 `--format` accepts only `markdown` (the default) or `json`. When `--format` or
 `--candidate` is supplied, it must be followed by a value; invalid or missing
 values produce an error and a nonzero exit.

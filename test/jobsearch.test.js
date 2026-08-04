@@ -32,6 +32,38 @@ test('does not treat generic requirement language as evidence', () => {
   assert.deepEqual(brief.missingEvidence, ['Experience with Rust']);
 });
 
+test('does not match different technologies through the word development', () => {
+  const brief = createApplicationBrief(
+    '# Python Developer\nCompany: Example\n## Requirements\n- Python development\n## How to apply\n- Apply online',
+    'Skills:\n- Java development'
+  );
+
+  assert.equal(brief.fitScore, 0);
+  assert.deepEqual(brief.evidenceMap[0].evidence, []);
+  assert.deepEqual(brief.missingEvidence, ['Python development']);
+});
+
+test('matches a distinctive technology token despite different surrounding words', () => {
+  const brief = createApplicationBrief(
+    '# Python Developer\nCompany: Example\n## Requirements\n- Python development\n## How to apply\n- Apply online',
+    'Projects:\n- Built Python services'
+  );
+
+  assert.equal(brief.fitScore, 100);
+  assert.deepEqual(brief.evidenceMap[0].evidence, ['Built Python services']);
+  assert.deepEqual(brief.missingEvidence, []);
+});
+
+test('reports a requirement as missing when candidate notes contain no evidence', () => {
+  const brief = createApplicationBrief(
+    '# Python Developer\nCompany: Example\n## Requirements\n- Python development\n## How to apply\n- Apply online'
+  );
+
+  assert.equal(brief.fitScore, 0);
+  assert.deepEqual(brief.evidenceMap[0].evidence, []);
+  assert.deepEqual(brief.missingEvidence, ['Python development']);
+});
+
 test('parses minimum qualifications without absorbing other sections', () => {
   const job = parseJobPost([
     '# Platform Engineer',

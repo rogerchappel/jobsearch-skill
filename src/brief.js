@@ -31,7 +31,7 @@ function findEvidence(requirement, candidate) {
 }
 
 const genericWords = new Set([
-  'ability', 'demonstrated', 'excellent', 'experience', 'familiarity', 'knowledge',
+  'ability', 'demonstrated', 'development', 'excellent', 'experience', 'familiarity', 'knowledge',
   'preferred', 'proficiency', 'required', 'skills', 'strong', 'using', 'with', 'work', 'working', 'years'
 ]);
 

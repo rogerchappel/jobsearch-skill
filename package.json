@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "description": "Local-first agent skill for turning job posts into reviewed application briefs.",
   "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
   "bin": {
     "jobsearch-skill": "bin/jobsearch-skill.js"
   },

@@ -20,6 +20,11 @@ if (pkg.bin?.['jobsearch-skill'] !== 'bin/jobsearch-skill.js') {
   process.exit(1);
 }
 
+if (pkg.main !== './src/index.js' || pkg.exports?.['.'] !== './src/index.js') {
+  console.error('package.json root export must resolve to ./src/index.js');
+  process.exit(1);
+}
+
 if (missingFiles.length) {
   console.error('package.json files missing: ' + missingFiles.join(', '));
   process.exit(1);

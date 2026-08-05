@@ -17,6 +17,18 @@ For a human-readable brief:
 node bin/jobsearch-skill.js fixtures/job-post.md --candidate fixtures/candidate-notes.md --format markdown
 ~~~
 
+## Library API
+
+The package root exports `createApplicationBrief`, `parseCandidateNotes`,
+`parseJobPost`, and `renderMarkdown` for ECMAScript module consumers:
+
+~~~js
+import { createApplicationBrief, renderMarkdown } from 'jobsearch-skill';
+
+const brief = createApplicationBrief(jobPostMarkdown, candidateNotesMarkdown);
+console.log(renderMarkdown(brief));
+~~~
+
 ## What It Produces
 
 - Role metadata and seniority signals
@@ -70,7 +82,9 @@ npm run release:check
 
 `npm run lint` is the contributor-facing static check alias used by the release
 gate, and currently delegates to the same local package validation as
-`npm run check`.
+`npm run check`. The package smoke creates the tarball, installs it in a
+disposable consumer, imports the package root, exercises the library API, and
+runs the installed CLI.
 
 ## Limitations
 

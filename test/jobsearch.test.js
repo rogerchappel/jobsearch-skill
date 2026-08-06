@@ -157,6 +157,49 @@ test('CLI rejects unsupported formats', () => {
   assert.match(result.stderr, /Unsupported --format "yaml".*markdown or json/);
 });
 
+test('CLI accepts options before the job-post input', () => {
+  const result = runCli([
+    '--format',
+    'json',
+    '--candidate',
+    'fixtures/candidate-notes.md',
+    'fixtures/job-post.md'
+  ]);
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).fitScore, 75);
+});
+
+test('CLI rejects unknown flags with usage', () => {
+  const result = runCli(['fixtures/job-post.md', '--unknown']);
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Unknown option "--unknown"/);
+  assert.match(result.stderr, /Usage: jobsearch-skill/);
+});
+
+test('CLI rejects extra positional arguments with usage', () => {
+  const result = runCli(['fixtures/job-post.md', 'fixtures/candidate-notes.md']);
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Unexpected positional argument "fixtures\/candidate-notes\.md"/);
+  assert.match(result.stderr, /Usage: jobsearch-skill/);
+});
+
+test('CLI rejects duplicate options with usage', () => {
+  const result = runCli([
+    'fixtures/job-post.md',
+    '--format',
+    'json',
+    '--format',
+    'markdown'
+  ]);
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /--format may only be specified once/);
+  assert.match(result.stderr, /Usage: jobsearch-skill/);
+});
+
 for (const flag of ['--format', '--candidate']) {
   test(`CLI rejects a missing ${flag} value`, () => {
     const result = runCli(['fixtures/job-post.md', flag]);

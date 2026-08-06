@@ -63,9 +63,11 @@ development` does not satisfy `Python development`; an item that mentions
 abbreviations, and related technologies, so review both matches and missing
 evidence rather than treating the fit score as a hiring decision.
 
-`--format` accepts only `markdown` (the default) or `json`. When `--format` or
-`--candidate` is supplied, it must be followed by a value; invalid or missing
-values produce an error and a nonzero exit.
+The CLI accepts exactly one job-post path plus optional `--candidate` and
+`--format` flags. Flags may appear before or after the job-post path, and each
+flag may be supplied at most once. `--format` accepts only `markdown` (the
+default) or `json`. Missing values, unknown flags, duplicate flags, and extra
+positional arguments produce a concise usage error and exit status 2.
 
 ## Verification
 

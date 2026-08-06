@@ -9,13 +9,16 @@ jobsearch-skill fixtures/job-post.md --candidate fixtures/candidate-notes.md
 ## JSON Brief
 
 ~~~bash
-jobsearch-skill fixtures/job-post.md --candidate fixtures/candidate-notes.md --format json
+jobsearch-skill --format json --candidate fixtures/candidate-notes.md fixtures/job-post.md
 ~~~
 
 Use JSON when another local agent step needs structured evidence and risk flags.
 
-The format value is required when the flag is present and must be `markdown` or
-`json`. Candidate notes may organize bullet evidence with Markdown headings:
+The job-post path may appear before or after the options. It is the only
+positional argument. Each option may appear once, and the format value is
+required when the flag is present and must be `markdown` or `json`. Unknown
+options, duplicate options, and extra positional arguments are usage errors.
+Candidate notes may organize bullet evidence with Markdown headings:
 
 ~~~markdown
 ## Skills

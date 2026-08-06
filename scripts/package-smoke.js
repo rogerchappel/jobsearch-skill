@@ -42,16 +42,28 @@ try {
   ], { cwd: workspace });
 
   const packageRoot = join(workspace, 'node_modules', 'jobsearch-skill');
-  const binResult = run(join(workspace, 'node_modules', '.bin', 'jobsearch-skill'), [
-    join(packageRoot, 'fixtures', 'job-post.md'),
+  const installedBin = join(workspace, 'node_modules', '.bin', 'jobsearch-skill');
+  const jobFixture = join(packageRoot, 'fixtures', 'job-post.md');
+  const binResult = run(installedBin, [
+    '--format',
+    'json',
     '--candidate',
     join(packageRoot, 'fixtures', 'candidate-notes.md'),
-    '--format',
-    'json'
+    jobFixture
   ], { cwd: workspace });
   JSON.parse(binResult.stdout);
 
-  console.log(`package smoke passed: installed ${pack.filename}, imported root API, and ran installed CLI`);
+  const unknownOption = runExpectingFailure(installedBin, [jobFixture, '--unknown'], { cwd: workspace });
+  if (unknownOption.status !== 2 || !unknownOption.stderr.includes('Unknown option "--unknown"')) {
+    throw new Error(`installed CLI did not reject an unknown option cleanly:\n${unknownOption.stderr}`);
+  }
+
+  const extraPositional = runExpectingFailure(installedBin, [jobFixture, 'extra.md'], { cwd: workspace });
+  if (extraPositional.status !== 2 || !extraPositional.stderr.includes('Unexpected positional argument "extra.md"')) {
+    throw new Error(`installed CLI did not reject an extra positional cleanly:\n${extraPositional.stderr}`);
+  }
+
+  console.log(`package smoke passed: installed ${pack.filename}, imported root API, and verified installed CLI parsing`);
 } finally {
   rmSync(workspace, { recursive: true, force: true });
 }
@@ -61,6 +73,14 @@ function run(command, args, options = {}) {
   if (result.status !== 0) {
     const output = `${result.stdout || ''}\n${result.stderr || ''}`;
     throw new Error(`${command} ${args.join(' ')} failed with status ${result.status}:\n${output}`);
+  }
+  return result;
+}
+
+function runExpectingFailure(command, args, options = {}) {
+  const result = spawnSync(command, args, { encoding: 'utf8', ...options });
+  if (result.status === 0 || result.error) {
+    throw new Error(`${command} ${args.join(' ')} unexpectedly succeeded or failed to start`);
   }
   return result;
 }

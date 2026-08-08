@@ -12,8 +12,8 @@ const { jobPath, candidatePath, format } = parseArgs(args);
 if (!['markdown', 'json'].includes(format)) {
   fail(`Unsupported --format "${format}". Expected markdown or json.`);
 }
-const jobText = fs.readFileSync(jobPath, 'utf8');
-const candidateText = candidatePath ? fs.readFileSync(candidatePath, 'utf8') : '';
+const jobText = readInputFile('job-post', jobPath);
+const candidateText = candidatePath ? readInputFile('candidate', candidatePath) : '';
 const brief = createApplicationBrief(jobText, candidateText);
 if (format === 'json') console.log(JSON.stringify(brief, null, 2));
 else console.log(renderMarkdown(brief));
@@ -44,6 +44,21 @@ function parseArgs(argv) {
 
   if (!parsed.jobPath) fail('A job-post path is required.');
   return parsed;
+}
+
+function readInputFile(label, path) {
+  try {
+    const stats = fs.statSync(path);
+    if (!stats.isFile()) fail(`${label} path "${path}" is not a regular file.`);
+    return fs.readFileSync(path, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') fail(`${label} file "${path}" does not exist.`);
+    if (error?.code === 'EACCES' || error?.code === 'EPERM') {
+      fail(`${label} file "${path}" is not readable.`);
+    }
+    if (error?.code === 'EISDIR') fail(`${label} path "${path}" is not a regular file.`);
+    throw error;
+  }
 }
 
 function fail(message) {

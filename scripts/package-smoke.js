@@ -63,7 +63,16 @@ try {
     throw new Error(`installed CLI did not reject an extra positional cleanly:\n${extraPositional.stderr}`);
   }
 
-  console.log(`package smoke passed: installed ${pack.filename}, imported root API, and verified installed CLI parsing`);
+  const missingJob = join(workspace, 'missing-job-post.md');
+  const missingInput = runExpectingFailure(installedBin, [missingJob], { cwd: workspace });
+  if (missingInput.status !== 2
+    || !missingInput.stderr.includes(`job-post file "${missingJob}" does not exist`)
+    || !missingInput.stderr.includes('Usage: jobsearch-skill')
+    || missingInput.stderr.includes('node:fs')) {
+    throw new Error(`installed CLI did not report a missing input cleanly:\n${missingInput.stderr}`);
+  }
+
+  console.log(`package smoke passed: installed ${pack.filename}, imported root API, and verified installed CLI parsing and input errors`);
 } finally {
   rmSync(workspace, { recursive: true, force: true });
 }

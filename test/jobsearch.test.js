@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import fs, { chmodSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { createApplicationBrief, parseCandidateNotes, parseJobPost, renderMarkdown } from '../src/index.js';
 
 test('parses job metadata and requirements', () => {
@@ -208,6 +210,57 @@ for (const flag of ['--format', '--candidate']) {
     assert.match(result.stderr, new RegExp(`${flag} requires a value`));
   });
 }
+
+for (const input of [
+  { label: 'job-post', args: (path) => [path] },
+  { label: 'candidate', args: (path) => ['fixtures/job-post.md', '--candidate', path] }
+]) {
+  test(`CLI reports a missing ${input.label} file without a stack trace`, () => {
+    const path = join(tmpdir(), `jobsearch-skill-missing-${input.label}-${process.pid}.md`);
+    const result = runCli(input.args(path));
+
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, new RegExp(`${input.label} file .* does not exist`));
+    assert.match(result.stderr, /Usage: jobsearch-skill/);
+    assert.doesNotMatch(result.stderr, /node:fs|at readInputFile/);
+  });
+
+  test(`CLI rejects a directory used as the ${input.label} input`, () => {
+    const directory = mkdtempSync(join(tmpdir(), 'jobsearch-skill-directory-'));
+    try {
+      const result = runCli(input.args(directory));
+      assert.equal(result.status, 2);
+      assert.match(result.stderr, new RegExp(`${input.label} path .* is not a regular file`));
+      assert.match(result.stderr, /Usage: jobsearch-skill/);
+      assert.doesNotMatch(result.stderr, /node:fs|at readInputFile/);
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+}
+
+test('CLI reports an unreadable input where permissions are enforced', (t) => {
+  const directory = mkdtempSync(join(tmpdir(), 'jobsearch-skill-unreadable-'));
+  const path = join(directory, 'job-post.md');
+  try {
+    writeFileSync(path, '# Example');
+    chmodSync(path, 0o000);
+    if (fs.readFileSync(path, 'utf8') === '# Example') {
+      t.skip('current user can read mode-000 files');
+      return;
+    }
+  } catch (error) {
+    if (error.code !== 'EACCES' && error.code !== 'EPERM') throw error;
+    const result = runCli([path]);
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /job-post file .* is not readable/);
+    assert.match(result.stderr, /Usage: jobsearch-skill/);
+    assert.doesNotMatch(result.stderr, /node:fs|at readInputFile/);
+  } finally {
+    chmodSync(path, 0o600);
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
 
 function runCli(args) {
   return spawnSync(process.execPath, ['bin/jobsearch-skill.js', ...args], {

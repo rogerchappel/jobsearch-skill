@@ -54,6 +54,21 @@ treated as requirements. Candidate notes accept `Skills`, `Projects`,
 Markdown headings (for example, `## Skills`) or colon-terminated headings (for
 example, `Skills:`).
 
+Role classification is deliberately contextual. Seniority is inferred from the
+role title, remote-friendly status from the title or `Location`, contract status
+from the title or an `Employment type`, `Job type`, or `Engagement` field, and
+startup status from a `Company stage` or `Funding stage` field. Explicit remote
+negation is respected. This avoids treating phrases such as “lead incident
+reviews”, “contract testing”, and “application startup time” as job metadata.
+Unusual titles or unlabelled prose may therefore remain unclassified and should
+be reviewed rather than assumed.
+
+Application instructions are taken from `How to Apply`, `Application`,
+`Application Instructions`, `Application Process`, or `Apply` sections. In
+unstructured text, only lines that begin with a direct application phrase such
+as “To apply”, “Please send”, or “Email your” are included. Keyword mentions in
+requirements and responsibilities are not treated as application guidance.
+
 Evidence matching is deterministic token matching, not semantic inference. A
 requirement matches a candidate skill, project, or proof item when they share
 at least one distinctive, case-insensitive token. Common qualifiers and broad

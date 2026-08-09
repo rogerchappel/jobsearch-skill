@@ -14,6 +14,74 @@ test('parses job metadata and requirements', () => {
   assert.equal(job.requirements.length, 4);
 });
 
+test('does not infer seniority from action verbs in role content', () => {
+  for (const line of ['Lead incident reviews', 'Staff the support rotation']) {
+    const job = parseJobPost(`# Backend Engineer\n## Responsibilities\n- ${line}`);
+    assert.equal(job.seniority, 'unspecified');
+  }
+});
+
+test('detects genuine seniority from the role title', () => {
+  for (const [title, seniority] of [
+    ['Lead Platform Engineer', 'lead'],
+    ['Senior Backend Engineer', 'senior'],
+    ['Junior Software Engineer', 'junior']
+  ]) {
+    assert.equal(parseJobPost(`# ${title}`).seniority, seniority);
+  }
+});
+
+test('respects explicit remote-work negation', () => {
+  const job = parseJobPost('# Backend Engineer\nLocation: Brisbane; remote work is not offered');
+  assert.deepEqual(job.signals, []);
+});
+
+test('detects genuine remote roles', () => {
+  const job = parseJobPost('# Backend Engineer\nLocation: Remote within Australia');
+  assert.deepEqual(job.signals, ['remote-friendly']);
+});
+
+test('does not infer job signals from domain phrases', () => {
+  const job = parseJobPost([
+    '# Backend Engineer',
+    '## Requirements',
+    '- Experience with contract testing',
+    '## Responsibilities',
+    '- Improve application startup time'
+  ].join('\n'));
+  assert.deepEqual(job.signals, []);
+});
+
+test('detects explicit contract and startup descriptions', () => {
+  const contract = parseJobPost('# Contract Backend Engineer\nEmployment type: 6-month contract');
+  const startup = parseJobPost('# Backend Engineer\nCompany stage: Series A startup');
+  assert.deepEqual(contract.signals, ['non-permanent']);
+  assert.deepEqual(startup.signals, ['startup']);
+});
+
+test('does not treat arbitrary keyword-bearing bullets as application instructions', () => {
+  const job = parseJobPost([
+    '# Backend Engineer',
+    '## Requirements',
+    '- Apply security patches',
+    '- Send telemetry metrics'
+  ].join('\n'));
+  assert.deepEqual(job.instructions, []);
+});
+
+test('extracts instructions from application context', () => {
+  const job = parseJobPost([
+    '# Backend Engineer',
+    '## How to Apply',
+    '- Email your resume to jobs@example.com',
+    '- Include a portfolio and cover letter'
+  ].join('\n'));
+  assert.deepEqual(job.instructions, [
+    'Email your resume to jobs@example.com',
+    'Include a portfolio and cover letter'
+  ]);
+});
+
 test('creates evidence-backed brief', () => {
   const brief = createApplicationBrief(fs.readFileSync('fixtures/job-post.md', 'utf8'), fs.readFileSync('fixtures/candidate-notes.md', 'utf8'));
   assert.equal(brief.fitScore, 75);

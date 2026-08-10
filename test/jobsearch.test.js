@@ -124,6 +124,29 @@ test('matches a distinctive technology token despite different surrounding words
   assert.deepEqual(brief.missingEvidence, []);
 });
 
+test('matches exact distinctive short and punctuation technology tokens', () => {
+  for (const technology of ['C++', 'C#', 'Go', 'SQL', 'AWS']) {
+    const brief = createApplicationBrief(
+      `# Engineer\nCompany: Example\n## Requirements\n- ${technology}\n## How to apply\n- Apply online`,
+      `Skills:\n- ${technology}`
+    );
+
+    assert.equal(brief.fitScore, 100, technology);
+    assert.deepEqual(brief.evidenceMap[0].evidence, [technology], technology);
+    assert.deepEqual(brief.missingEvidence, [], technology);
+  }
+});
+
+test('does not match unrelated short or common words', () => {
+  const brief = createApplicationBrief(
+    '# Engineer\nCompany: Example\n## Requirements\n- Be an API pro with strong skills\n## How to apply\n- Apply online',
+    'Skills:\n- An expert at work'
+  );
+
+  assert.equal(brief.fitScore, 0);
+  assert.deepEqual(brief.evidenceMap[0].evidence, []);
+});
+
 test('reports a requirement as missing when candidate notes contain no evidence', () => {
   const brief = createApplicationBrief(
     '# Python Developer\nCompany: Example\n## Requirements\n- Python development\n## How to apply\n- Apply online'

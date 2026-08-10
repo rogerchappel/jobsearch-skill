@@ -35,9 +35,11 @@ const genericWords = new Set([
   'preferred', 'proficiency', 'required', 'skills', 'strong', 'using', 'with', 'work', 'working', 'years'
 ]);
 
+const distinctiveShortTokens = new Set(['aws', 'c#', 'c++', 'go', 'sql']);
+
 function keywords(value) {
   return value.toLowerCase().split(/[^a-z0-9+#]+/)
-    .filter(word => word.length > 3 && !genericWords.has(word));
+    .filter(word => (word.length > 3 || distinctiveShortTokens.has(word)) && !genericWords.has(word));
 }
 
 function riskFlags(job, candidate) {

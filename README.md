@@ -74,9 +74,12 @@ requirement matches a candidate skill, project, or proof item when they share
 at least one distinctive, case-insensitive token. Common qualifiers and broad
 terms such as `experience`, `skills`, and `development` are ignored, so `Java
 development` does not satisfy `Python development`; an item that mentions
-`Python` does. This intentionally conservative heuristic can miss synonyms,
-abbreviations, and related technologies, so review both matches and missing
-evidence rather than treating the fit score as a hiring decision.
+`Python` does. Exact, distinctive short technology names (`C++`, `C#`, `Go`,
+`SQL`, and `AWS`) are also recognized, while arbitrary short words remain
+ignored. This intentionally conservative heuristic can miss synonyms,
+abbreviations, and related technologies outside that set, so review both
+matches and missing evidence rather than treating the fit score as a hiring
+decision.
 
 The CLI accepts exactly one job-post path plus optional `--candidate` and
 `--format` flags. Flags may appear before or after the job-post path, and each

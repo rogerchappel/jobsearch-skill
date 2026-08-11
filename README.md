@@ -52,7 +52,10 @@ posts, when none of those headings is present, all bullets in the document are
 treated as requirements. Candidate notes accept `Skills`, `Projects`,
 `Constraints`, and `Proof`, `Evidence`, or `Supporting Evidence` as either
 Markdown headings (for example, `## Skills`) or colon-terminated headings (for
-example, `Skills:`).
+example, `Skills:`). List items may use `-` or `*`, with zero to three leading
+spaces as allowed for standard Markdown list markers. Lines indented four or
+more spaces are not parsed as list items, so indented code or unrelated content
+is not absorbed into the brief.
 
 Role classification is deliberately contextual. Seniority is inferred from the
 role title, remote-friendly status from the title or `Location`, contract status

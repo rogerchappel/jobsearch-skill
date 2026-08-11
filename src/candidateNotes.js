@@ -13,7 +13,7 @@ function collectList(text, headingPattern) {
   for (const line of lines) {
     const heading = parseHeading(line);
     if (heading !== undefined) active = headingPattern.test(heading);
-    const bullet = line.match(/^[-*]\s+(.+)/);
+    const bullet = line.match(/^ {0,3}[-*]\s+(.+)/);
     if (active && bullet) out.push(bullet[1].trim());
   }
   return out;

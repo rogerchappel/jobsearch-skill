@@ -53,7 +53,7 @@ function collectSections(text) {
 }
 
 function extractBullets(text) {
-  return text.split('\n').map(line => line.match(/^[-*]\s+(.+)/)?.[1]?.trim()).filter(Boolean);
+  return text.split('\n').map(line => line.match(/^ {0,3}[-*]\s+(.+)/)?.[1]?.trim()).filter(Boolean);
 }
 
 function extractInstructions(text, sections) {
@@ -70,7 +70,7 @@ function extractInstructions(text, sections) {
   }
 
   return text.split('\n')
-    .map(line => line.replace(/^[-*]\s+/, '').trim())
+    .map(line => line.replace(/^ {0,3}[-*]\s+/, '').trim())
     .filter(line => /^(?:to apply|apply (?:at|here|online|via|with)|please (?:apply|send|email)|send (?:your|a)|email (?:your|a))/i.test(line))
     .slice(0, 6);
 }

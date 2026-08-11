@@ -82,6 +82,23 @@ test('extracts instructions from application context', () => {
   ]);
 });
 
+test('parses conventionally indented job-post bullets by section', () => {
+  const job = parseJobPost([
+    '# Backend Engineer',
+    '## Requirements',
+    '  - Build Node.js services',
+    '## Responsibilities',
+    '   * Operate production systems',
+    '## How to Apply',
+    ' - Email your resume to jobs@example.com',
+    '    - This code-block-like line is not an application instruction'
+  ].join('\n'));
+
+  assert.deepEqual(job.requirements, ['Build Node.js services']);
+  assert.deepEqual(job.responsibilities, ['Operate production systems']);
+  assert.deepEqual(job.instructions, ['Email your resume to jobs@example.com']);
+});
+
 test('creates evidence-backed brief', () => {
   const brief = createApplicationBrief(fs.readFileSync('fixtures/job-post.md', 'utf8'), fs.readFileSync('fixtures/candidate-notes.md', 'utf8'));
   assert.equal(brief.fitScore, 75);
@@ -217,6 +234,39 @@ test('parses candidate notes under Markdown headings', () => {
   assert.deepEqual(notes.projects, ['Built a release tool']);
   assert.deepEqual(notes.constraints, ['Remote only']);
   assert.deepEqual(notes.proof, ['Reduced build time by 30%']);
+});
+
+test('parses conventionally indented bullets in every candidate evidence section', () => {
+  const notes = parseCandidateNotes([
+    '## Skills',
+    ' - Node.js',
+    '## Projects',
+    '  * Built Node.js services',
+    '## Constraints',
+    '   - Remote only',
+    '## Evidence',
+    '  - Reduced Node.js service latency by 30%',
+    '    - This code-block-like line is not evidence'
+  ].join('\n'));
+
+  assert.deepEqual(notes.skills, ['Node.js']);
+  assert.deepEqual(notes.projects, ['Built Node.js services']);
+  assert.deepEqual(notes.constraints, ['Remote only']);
+  assert.deepEqual(notes.proof, ['Reduced Node.js service latency by 30%']);
+});
+
+test('creates an evidence-backed brief from indented Markdown bullets', () => {
+  const brief = createApplicationBrief(
+    '# Node.js Engineer\n## Requirements\n  - Build Node.js services',
+    '## Projects\n   * Built Node.js services'
+  );
+
+  assert.equal(brief.fitScore, 100);
+  assert.deepEqual(brief.evidenceMap, [{
+    requirement: 'Build Node.js services',
+    evidence: ['Built Node.js services']
+  }]);
+  assert.deepEqual(brief.missingEvidence, []);
 });
 
 test('keeps colon-terminated candidate note headings compatible', () => {

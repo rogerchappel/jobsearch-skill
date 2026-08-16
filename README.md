@@ -66,6 +66,11 @@ reviews”, “contract testing”, and “application startup time” as job me
 Unusual titles or unlabelled prose may therefore remain unclassified and should
 be reviewed rather than assumed.
 
+Company metadata is accepted either as a labelled `Company: Example Robotics`
+line or in a level-one role heading such as `# Platform Engineer at Example
+Robotics`. An unlabelled `at Capitalized Phrase` elsewhere in the post is
+treated as ordinary prose, not an employer name.
+
 Application instructions are taken from `How to Apply`, `Application`,
 `Application Instructions`, `Application Process`, or `Apply` sections. In
 unstructured text, only lines that begin with a direct application phrase such

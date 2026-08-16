@@ -14,6 +14,23 @@ test('parses job metadata and requirements', () => {
   assert.equal(job.requirements.length, 4);
 });
 
+test('parses company only from supported metadata forms', () => {
+  assert.equal(parseJobPost('# Platform Engineer\nCompany: Example Robotics').company, 'Example Robotics');
+  assert.equal(parseJobPost('# Platform Engineer at Example Robotics').company, 'Example Robotics');
+});
+
+test('does not infer company from incidental role prose', () => {
+  const job = parseJobPost([
+    '# Platform Engineer',
+    '## Responsibilities',
+    '- Operate services at Scale',
+    '## Requirements',
+    '- Node.js'
+  ].join('\n'));
+
+  assert.equal(job.company, 'Unknown company');
+});
+
 test('does not infer seniority from action verbs in role content', () => {
   for (const line of ['Lead incident reviews', 'Staff the support rotation']) {
     const job = parseJobPost(`# Backend Engineer\n## Responsibilities\n- ${line}`);
@@ -106,6 +123,18 @@ test('creates evidence-backed brief', () => {
   assert.deepEqual(communicationEvidence.evidence, []);
   assert.ok(brief.missingEvidence.includes('Communicate tradeoffs with product and engineering teams'));
   assert.ok(brief.riskFlags.some(flag => flag.includes('Candidate constraint')));
+});
+
+test('keeps incidental company-like prose out of application briefs', () => {
+  const brief = createApplicationBrief([
+    '# Platform Engineer',
+    '## Responsibilities',
+    '- Operate services at Scale',
+    '## Requirements',
+    '- Node.js'
+  ].join('\n'));
+
+  assert.equal(brief.job.company, 'Unknown company');
 });
 
 test('does not treat generic requirement language as evidence', () => {

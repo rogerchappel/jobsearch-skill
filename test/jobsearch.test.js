@@ -322,6 +322,21 @@ test('CLI help exits cleanly with usage text', () => {
   assert.match(result.stdout, /Usage: jobsearch-skill/);
 });
 
+for (const invocation of [
+  ['--help', 'fixtures/job-post.md'],
+  ['fixtures/job-post.md', '--help'],
+  ['--help', '--unknown']
+]) {
+  test(`CLI rejects help mixed with unsupported arguments: ${invocation.join(' ')}`, () => {
+    const result = runCli(invocation);
+
+    assert.equal(result.status, 2);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, /Unknown option "--help"/);
+    assert.match(result.stderr, /Usage: jobsearch-skill/);
+  });
+}
+
 test('CLI rejects unsupported formats', () => {
   const result = runCli(['fixtures/job-post.md', '--format', 'yaml']);
 

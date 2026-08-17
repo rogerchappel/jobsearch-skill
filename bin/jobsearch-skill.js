@@ -4,7 +4,7 @@ import { createApplicationBrief, renderMarkdown } from '../src/index.js';
 
 const usage = 'Usage: jobsearch-skill <job-post.md> [--candidate notes.md] [--format markdown|json]';
 const args = process.argv.slice(2);
-if (args.length === 0 || args.includes('--help')) {
+if (args.length === 0 || (args.length === 1 && args[0] === '--help')) {
   console.log(usage);
   process.exit(args.length === 0 ? 1 : 0);
 }

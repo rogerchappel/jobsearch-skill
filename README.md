@@ -94,6 +94,9 @@ The CLI accepts exactly one job-post path plus optional `--candidate` and
 flag may be supplied at most once. `--format` accepts only `markdown` (the
 default) or `json`. Missing values, unknown flags, duplicate flags, and extra
 positional arguments produce a concise usage error and exit status 2.
+Standalone `--help` prints usage and exits successfully; when combined with a
+job-post path or any other argument, it is rejected as an unsupported option
+with the same status 2 usage error.
 Both inputs must name readable, regular local files; directories and other
 non-file paths are rejected. Missing, unreadable, and non-file inputs also exit
 with status 2 and print a path-specific diagnostic plus the CLI usage, without

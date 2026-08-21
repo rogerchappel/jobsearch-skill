@@ -7,13 +7,17 @@ const fieldPatterns = {
 export function parseJobPost(text) {
   const normalized = text.replace(/\r\n/g, '\n');
   const sections = collectSections(normalized);
-  const requirements = extractBullets(firstSection(sections, [
+  const requirementKeys = [
     'requirements',
     'minimum-requirements',
     'qualifications',
     'minimum-qualifications',
     'required-qualifications'
-  ]) ?? normalized);
+  ];
+  const requirementSections = sections.filter(section => requirementKeys.includes(section.key));
+  const requirements = requirementSections.length
+    ? [...new Set(requirementSections.flatMap(section => extractBullets(section.content)))]
+    : extractBullets(normalized);
   const responsibilities = extractBullets(firstSection(sections, ['responsibilities', 'role']) || '');
   const instructions = extractInstructions(normalized, sections);
   const title = firstMatch(normalized, fieldPatterns.title) || 'Unknown role';
@@ -30,7 +34,10 @@ export function parseJobPost(text) {
 }
 
 function firstSection(sections, keys) {
-  return keys.map(key => sections[key]).find(section => section !== undefined);
+  for (const key of keys) {
+    const section = sections.find(candidate => candidate.key === key);
+    if (section) return section.content;
+  }
 }
 
 function firstMatch(text, patterns) {
@@ -41,13 +48,13 @@ function firstMatch(text, patterns) {
 }
 
 function collectSections(text) {
-  const sections = {};
+  const sections = [];
   const parts = text.split(/^##\s+/m);
   for (const part of parts) {
     const [heading, ...rest] = part.split('\n');
     if (!rest.length) continue;
     const key = heading.trim().toLowerCase().replace(/[^a-z]+/g, '-');
-    sections[key] = rest.join('\n');
+    sections.push({ key, content: rest.join('\n') });
   }
   return sections;
 }

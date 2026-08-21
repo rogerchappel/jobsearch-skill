@@ -218,6 +218,35 @@ test('parses minimum qualifications without absorbing other sections', () => {
   assert.deepEqual(job.responsibilities, ['Operate services']);
 });
 
+test('combines recognized requirement sections in document order', () => {
+  const job = parseJobPost([
+    '# Platform Engineer',
+    '## Qualifications',
+    '- PostgreSQL',
+    '## Responsibilities',
+    '- Operate services',
+    '## Requirements',
+    '- Node.js'
+  ].join('\n'));
+
+  assert.deepEqual(job.requirements, ['PostgreSQL', 'Node.js']);
+});
+
+test('combines repeated requirement headings without duplicate bullets', () => {
+  const job = parseJobPost([
+    '# Platform Engineer',
+    '## Requirements',
+    '- Node.js',
+    '## Requirements',
+    '- PostgreSQL',
+    '- Node.js',
+    '## Minimum Qualifications',
+    '- Kubernetes'
+  ].join('\n'));
+
+  assert.deepEqual(job.requirements, ['Node.js', 'PostgreSQL', 'Kubernetes']);
+});
+
 for (const heading of ['Requirements', 'Qualifications']) {
   test(`keeps an empty ${heading} section empty`, () => {
     const job = parseJobPost([

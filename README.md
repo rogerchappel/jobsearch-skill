@@ -46,10 +46,12 @@ user, not scraped profile data.
 
 Requirement bullets are read from `Requirements`, `Minimum Requirements`,
 `Qualifications`, `Minimum Qualifications`, or `Required Qualifications`
-level-two Markdown sections. A recognized section may be empty; in that case,
-the parsed requirements are empty. For compatibility with unstructured saved
-posts, when none of those headings is present, all bullets in the document are
-treated as requirements. Candidate notes accept `Skills`, `Projects`,
+level-two Markdown sections. When a post contains multiple recognized sections,
+their bullets are combined in document order and duplicates are omitted. A
+recognized section may be empty; if every recognized section is empty, the
+parsed requirements are empty. For compatibility with unstructured saved posts,
+when none of those headings is present, all bullets in the document are treated
+as requirements. Candidate notes accept `Skills`, `Projects`,
 `Constraints`, and `Proof`, `Evidence`, or `Supporting Evidence` as either
 Markdown headings (for example, `## Skills`) or colon-terminated headings (for
 example, `Skills:`). List items may use `-` or `*`, with zero to three leading

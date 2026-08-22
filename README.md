@@ -57,7 +57,9 @@ Markdown headings (for example, `## Skills`) or colon-terminated headings (for
 example, `Skills:`). List items may use `-` or `*`, with zero to three leading
 spaces as allowed for standard Markdown list markers. Lines indented four or
 more spaces are not parsed as list items, so indented code or unrelated content
-is not absorbed into the brief.
+is not absorbed into the brief. Standard ATX closing hash sequences are also
+supported for role, job-section, and candidate-note headings (for example,
+`# Platform Engineer at Example Robotics ##` and `## Requirements ##`).
 
 Role classification is deliberately contextual. Seniority is inferred from the
 role title, remote-friendly status from the title or `Location`, contract status

@@ -19,6 +19,24 @@ test('parses company only from supported metadata forms', () => {
   assert.equal(parseJobPost('# Platform Engineer at Example Robotics').company, 'Example Robotics');
 });
 
+test('normalizes optional closing hashes in role and job section headings', () => {
+  const job = parseJobPost([
+    '# Senior Engineer at Acme ##',
+    '## Requirements ##',
+    '- Node.js',
+    '## Responsibilities ###',
+    '- Build APIs',
+    '## How to Apply ##',
+    '- Apply online'
+  ].join('\n'));
+
+  assert.equal(job.title, 'Senior Engineer at Acme');
+  assert.equal(job.company, 'Acme');
+  assert.deepEqual(job.requirements, ['Node.js']);
+  assert.deepEqual(job.responsibilities, ['Build APIs']);
+  assert.deepEqual(job.instructions, ['Apply online']);
+});
+
 test('does not infer company from incidental role prose', () => {
   const job = parseJobPost([
     '# Platform Engineer',
@@ -294,6 +312,24 @@ test('parses candidate notes under Markdown headings', () => {
   assert.deepEqual(notes.proof, ['Reduced build time by 30%']);
 });
 
+test('parses candidate evidence under headings with closing hashes', () => {
+  const notes = parseCandidateNotes([
+    '## Skills ##',
+    '- JavaScript',
+    '## Projects ###',
+    '- Built a release tool',
+    '## Constraints ##',
+    '- Remote only',
+    '## Supporting Evidence ##',
+    '- Reduced build time by 30%'
+  ].join('\n'));
+
+  assert.deepEqual(notes.skills, ['JavaScript']);
+  assert.deepEqual(notes.projects, ['Built a release tool']);
+  assert.deepEqual(notes.constraints, ['Remote only']);
+  assert.deepEqual(notes.proof, ['Reduced build time by 30%']);
+});
+
 test('parses conventionally indented bullets in every candidate evidence section', () => {
   const notes = parseCandidateNotes([
     '## Skills',
@@ -384,6 +420,28 @@ test('CLI accepts options before the job-post input', () => {
 
   assert.equal(result.status, 0, result.stderr);
   assert.equal(JSON.parse(result.stdout).fitScore, 75);
+});
+
+test('CLI JSON output normalizes closing hashes in job and candidate headings', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'jobsearch-headings-'));
+  const jobPath = join(directory, 'job.md');
+  const candidatePath = join(directory, 'candidate.md');
+  writeFileSync(jobPath, '# Senior Engineer at Acme ##\n## Requirements ##\n- Node.js\n## Responsibilities ##\n- Build APIs\n## How to Apply ##\n- Apply online');
+  writeFileSync(candidatePath, '## Skills ##\n- Node.js');
+
+  try {
+    const result = runCli([jobPath, '--candidate', candidatePath, '--format', 'json']);
+    assert.equal(result.status, 0, result.stderr);
+    const brief = JSON.parse(result.stdout);
+    assert.equal(brief.job.title, 'Senior Engineer at Acme');
+    assert.equal(brief.job.company, 'Acme');
+    assert.deepEqual(brief.job.requirements, ['Node.js']);
+    assert.deepEqual(brief.job.responsibilities, ['Build APIs']);
+    assert.deepEqual(brief.job.instructions, ['Apply online']);
+    assert.deepEqual(brief.candidateSummary.skills, ['Node.js']);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test('CLI rejects unknown flags with usage', () => {

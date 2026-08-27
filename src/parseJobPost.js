@@ -49,13 +49,20 @@ function firstMatch(text, patterns) {
 
 function collectSections(text) {
   const sections = [];
-  const parts = text.split(/^##\s+/m);
-  for (const part of parts) {
-    const [heading, ...rest] = part.split('\n');
-    if (!rest.length) continue;
-    const key = heading.trim().replace(/\s+#+\s*$/, '').toLowerCase().replace(/[^a-z]+/g, '-');
-    sections.push({ key, content: rest.join('\n') });
+  let current;
+  for (const line of text.split('\n')) {
+    const heading = line.match(/^ {0,3}#{2,6}[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$/);
+    if (heading) {
+      if (current) sections.push({ key: current.key, content: current.lines.join('\n') });
+      current = {
+        key: heading[1].trim().toLowerCase().replace(/[^a-z]+/g, '-'),
+        lines: []
+      };
+    } else if (current) {
+      current.lines.push(line);
+    }
   }
+  if (current) sections.push({ key: current.key, content: current.lines.join('\n') });
   return sections;
 }
 

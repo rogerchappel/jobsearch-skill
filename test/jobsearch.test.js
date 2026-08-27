@@ -37,6 +37,40 @@ test('normalizes optional closing hashes in role and job section headings', () =
   assert.deepEqual(job.instructions, ['Apply online']);
 });
 
+test('parses supported H3-H6 job sections without confusing the H1 title', () => {
+  const job = parseJobPost([
+    '# Platform Engineer',
+    '### Qualifications ###',
+    '- Kubernetes',
+    '#### Responsibilities',
+    '- Answer customer emails',
+    '###### How to Apply ####',
+    '- Email resume@example.com'
+  ].join('\n'));
+
+  assert.equal(job.title, 'Platform Engineer');
+  assert.deepEqual(job.requirements, ['Kubernetes']);
+  assert.deepEqual(job.responsibilities, ['Answer customer emails']);
+  assert.deepEqual(job.instructions, ['Email resume@example.com']);
+});
+
+test('does not inflate fit score with responsibility-only overlap under H3 sections', () => {
+  const brief = createApplicationBrief([
+    '# Platform Engineer',
+    '### Requirements',
+    '- Kubernetes',
+    '### Responsibilities',
+    '- Customer support',
+    '### How to Apply',
+    '- Email resume@example.com'
+  ].join('\n'), '## Skills\n- Customer support');
+
+  assert.equal(brief.fitScore, 0);
+  assert.deepEqual(brief.job.requirements, ['Kubernetes']);
+  assert.deepEqual(brief.job.responsibilities, ['Customer support']);
+  assert.deepEqual(brief.job.instructions, ['Email resume@example.com']);
+});
+
 test('does not infer company from incidental role prose', () => {
   const job = parseJobPost([
     '# Platform Engineer',

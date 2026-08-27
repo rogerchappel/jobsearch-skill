@@ -46,8 +46,11 @@ user, not scraped profile data.
 
 Requirement bullets are read from `Requirements`, `Minimum Requirements`,
 `Qualifications`, `Minimum Qualifications`, or `Required Qualifications`
-level-two Markdown sections. When a post contains multiple recognized sections,
-their bullets are combined in document order and duplicates are omitted. A
+Markdown sections using ATX heading levels H2 through H6 (for example,
+`## Requirements` or `#### Qualifications`). The level-one heading remains the
+role title and is not treated as a section. When a post contains multiple
+recognized sections, their bullets are combined in document order and
+duplicates are omitted. A
 recognized section may be empty; if every recognized section is empty, the
 parsed requirements are empty. For compatibility with unstructured saved posts,
 when none of those headings is present, all bullets in the document are treated
@@ -59,7 +62,7 @@ spaces as allowed for standard Markdown list markers. Lines indented four or
 more spaces are not parsed as list items, so indented code or unrelated content
 is not absorbed into the brief. Standard ATX closing hash sequences are also
 supported for role, job-section, and candidate-note headings (for example,
-`# Platform Engineer at Example Robotics ##` and `## Requirements ##`).
+`# Platform Engineer at Example Robotics ##` and `### Requirements ###`).
 
 Role classification is deliberately contextual. Seniority is inferred from the
 role title, remote-friendly status from the title or `Location`, contract status

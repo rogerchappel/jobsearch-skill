@@ -107,6 +107,24 @@ test('respects explicit remote-work negation', () => {
 
 test('detects genuine remote roles', () => {
   const job = parseJobPost('# Backend Engineer\nLocation: Remote within Australia');
+  assert.equal(job.location, 'Remote within Australia');
+  assert.deepEqual(job.signals, ['remote-friendly']);
+});
+
+test('does not infer location or remote status from incidental prose', () => {
+  for (const prose of [
+    'We build remote systems for hospitals.',
+    'Our remote-friendly culture supports collaboration.'
+  ]) {
+    const job = parseJobPost(`# Platform Engineer\n\n${prose}\n\n## Requirements\n- Node.js`);
+    assert.equal(job.location, 'Unspecified location');
+    assert.deepEqual(job.signals, []);
+  }
+});
+
+test('keeps title-derived remote status separate from explicit location metadata', () => {
+  const job = parseJobPost('# Remote Platform Engineer');
+  assert.equal(job.location, 'Unspecified location');
   assert.deepEqual(job.signals, ['remote-friendly']);
 });
 

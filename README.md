@@ -40,9 +40,10 @@ console.log(renderMarkdown(brief));
 ## Input Expectations
 
 The job post should be a local Markdown or text file containing the role title,
-responsibilities, requirements, and any location or compensation notes you want
-reflected in the brief. Candidate notes should be local evidence supplied by the
-user, not scraped profile data.
+responsibilities, requirements, and any metadata you want reflected in the
+brief. Location is read only from an explicit `Location:` field; unlabelled
+location prose is not promoted into the brief. Candidate notes should be local
+evidence supplied by the user, not scraped profile data.
 
 Requirement bullets are read from `Requirements`, `Minimum Requirements`,
 `Qualifications`, `Minimum Qualifications`, or `Required Qualifications`
@@ -65,13 +66,16 @@ supported for role, job-section, and candidate-note headings (for example,
 `# Platform Engineer at Example Robotics ##` and `### Requirements ###`).
 
 Role classification is deliberately contextual. Seniority is inferred from the
-role title, remote-friendly status from the title or `Location`, contract status
-from the title or an `Employment type`, `Job type`, or `Engagement` field, and
-startup status from a `Company stage` or `Funding stage` field. Explicit remote
-negation is respected. This avoids treating phrases such as “lead incident
-reviews”, “contract testing”, and “application startup time” as job metadata.
-Unusual titles or unlabelled prose may therefore remain unclassified and should
-be reviewed rather than assumed.
+role title, remote-friendly status from the title or explicit `Location` field,
+contract status from the title or an `Employment type`, `Job type`, or
+`Engagement` field, and startup status from a `Company stage` or `Funding stage`
+field. Explicit remote
+negation is respected. A title can therefore classify a role as remote-friendly
+without becoming its parsed location; only `Location:` supplies that displayed
+value. This avoids treating phrases such as “lead incident reviews”, “remote
+systems”, “remote-friendly culture”, “contract testing”, and “application
+startup time” as job metadata. Unusual titles or unlabelled prose may therefore
+remain unclassified and should be reviewed rather than assumed.
 
 Company metadata is accepted either as a labelled `Company: Example Robotics`
 line or in a level-one role heading such as `# Platform Engineer at Example

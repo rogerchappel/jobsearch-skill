@@ -1,7 +1,7 @@
 const fieldPatterns = {
   title: [/^#\s+(.+?)(?:\s+#+)?\s*$/m, /^title:\s*(.+)$/im],
   company: [/^company:\s*(.+)$/im, /^#\s+.+?\s+at\s+([A-Z][A-Za-z0-9 &.'-]*?)(?:\s+#+)?\s*$/m],
-  location: [/^location:\s*(.+)$/im, /\b(remote|hybrid|onsite|on-site)\b[^\n.]*/i]
+  location: [/^location:\s*(.+)$/im]
 };
 
 export function parseJobPost(text) {

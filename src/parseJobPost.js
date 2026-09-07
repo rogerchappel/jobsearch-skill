@@ -9,6 +9,7 @@ export function parseJobPost(text) {
   const sections = collectSections(normalized);
   const requirementKeys = [
     'requirements',
+    'requirements-qualifications',
     'minimum-requirements',
     'qualifications',
     'minimum-qualifications',
@@ -55,7 +56,7 @@ function collectSections(text) {
     if (heading) {
       if (current) sections.push({ key: current.key, content: current.lines.join('\n') });
       current = {
-        key: heading[1].trim().toLowerCase().replace(/[^a-z]+/g, '-'),
+        key: heading[1].trim().toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-+|-+$/g, ''),
         lines: []
       };
     } else if (current) {

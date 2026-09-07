@@ -46,10 +46,11 @@ location prose is not promoted into the brief. Candidate notes should be local
 evidence supplied by the user, not scraped profile data.
 
 Requirement bullets are read from `Requirements`, `Minimum Requirements`,
-`Qualifications`, `Minimum Qualifications`, or `Required Qualifications`
-Markdown sections using ATX heading levels H2 through H6 (for example,
-`## Requirements` or `#### Qualifications`). The level-one heading remains the
-role title and is not treated as a section. When a post contains multiple
+`Qualifications`, `Minimum Qualifications`, `Required Qualifications`, or
+`Requirements & Qualifications` Markdown sections using ATX heading levels H2
+through H6 (for example, `## Requirements:`, `## Requirements & Qualifications`,
+or `#### Qualifications`). Trailing heading punctuation is ignored. The
+level-one heading remains the role title and is not treated as a section. When a post contains multiple
 recognized sections, their bullets are combined in document order and
 duplicates are omitted. A
 recognized section may be empty; if every recognized section is empty, the

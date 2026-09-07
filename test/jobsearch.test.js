@@ -54,6 +54,24 @@ test('parses supported H3-H6 job sections without confusing the H1 title', () =>
   assert.deepEqual(job.instructions, ['Email resume@example.com']);
 });
 
+for (const heading of ['Requirements:', 'Requirements & Qualifications']) {
+  test(`recognizes the ${heading} requirement heading without falling back to unrelated bullets`, () => {
+    const job = parseJobPost([
+      '# Platform Engineer',
+      `## ${heading}`,
+      '- Node.js',
+      '## Responsibilities',
+      '- Sell products',
+      '## How to Apply',
+      '- Email resume@example.com'
+    ].join('\n'));
+
+    assert.deepEqual(job.requirements, ['Node.js']);
+    assert.deepEqual(job.responsibilities, ['Sell products']);
+    assert.deepEqual(job.instructions, ['Email resume@example.com']);
+  });
+}
+
 test('does not inflate fit score with responsibility-only overlap under H3 sections', () => {
   const brief = createApplicationBrief([
     '# Platform Engineer',

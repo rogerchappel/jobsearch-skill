@@ -43,7 +43,8 @@ The job post should be a local Markdown or text file containing the role title,
 responsibilities, requirements, and any metadata you want reflected in the
 brief. Location is read only from an explicit `Location:` field; unlabelled
 location prose is not promoted into the brief. Candidate notes should be local
-evidence supplied by the user, not scraped profile data.
+evidence supplied by the user, not scraped profile data. Both inputs accept LF,
+CRLF, and CR line endings and parse them identically.
 
 Requirement bullets are read from `Requirements`, `Minimum Requirements`,
 `Qualifications`, `Minimum Qualifications`, `Required Qualifications`, or

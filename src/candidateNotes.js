@@ -1,13 +1,16 @@
+import { normalizeLineEndings } from './normalizeLineEndings.js';
+
 export function parseCandidateNotes(text = '') {
-  const skills = collectList(text, /^skills?$/i);
-  const projects = collectList(text, /^projects?$/i);
-  const constraints = collectList(text, /^constraints?$/i);
-  const proof = collectList(text, /^(?:proof|proofs|evidence|supporting evidence)$/i);
+  const normalized = normalizeLineEndings(text);
+  const skills = collectList(normalized, /^skills?$/i);
+  const projects = collectList(normalized, /^projects?$/i);
+  const constraints = collectList(normalized, /^constraints?$/i);
+  const proof = collectList(normalized, /^(?:proof|proofs|evidence|supporting evidence)$/i);
   return { skills, projects, constraints, proof, raw: text };
 }
 
 function collectList(text, headingPattern) {
-  const lines = text.split(/\r?\n/);
+  const lines = text.split('\n');
   const out = [];
   let active = false;
   for (const line of lines) {

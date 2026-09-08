@@ -1,3 +1,5 @@
+import { normalizeLineEndings } from './normalizeLineEndings.js';
+
 const fieldPatterns = {
   title: [/^#\s+(.+?)(?:\s+#+)?\s*$/m, /^title:\s*(.+)$/im],
   company: [/^company:\s*(.+)$/im, /^#\s+.+?\s+at\s+([A-Z][A-Za-z0-9 &.'-]*?)(?:\s+#+)?\s*$/m],
@@ -5,7 +7,7 @@ const fieldPatterns = {
 };
 
 export function parseJobPost(text) {
-  const normalized = text.replace(/\r\n/g, '\n');
+  const normalized = normalizeLineEndings(text);
   const sections = collectSections(normalized);
   const requirementKeys = [
     'requirements',

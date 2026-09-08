@@ -6,12 +6,82 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createApplicationBrief, parseCandidateNotes, parseJobPost, renderMarkdown } from '../src/index.js';
 
+const withLineEnding = (text, lineEnding) => text.replace(/\n/g, lineEnding);
+
 test('parses job metadata and requirements', () => {
   const job = parseJobPost(fs.readFileSync('fixtures/job-post.md', 'utf8'));
   assert.equal(job.title, 'Senior Agent Workflow Engineer');
   assert.equal(job.company, 'Example Robotics');
   assert.equal(job.seniority, 'senior');
   assert.equal(job.requirements.length, 4);
+});
+
+test('parses CR-only job metadata and sections like LF input', () => {
+  const source = [
+    '# Platform Engineer',
+    'Company: Example Labs',
+    'Location: Remote',
+    '## Requirements',
+    '- Node.js services',
+    '- Release automation',
+    '## Responsibilities',
+    '- Maintain build tooling',
+    '## Application',
+    '- Apply with a portfolio'
+  ].join('\n');
+
+  assert.deepEqual(parseJobPost(withLineEnding(source, '\r')), parseJobPost(source));
+});
+
+test('parses CR-only candidate sections like LF input', () => {
+  const source = [
+    'Skills:',
+    '- Node.js',
+    '- Release automation',
+    'Projects:',
+    '- Build tooling',
+    'Constraints:',
+    '- Remote only',
+    'Supporting evidence:',
+    '- Maintained CI pipelines'
+  ].join('\n');
+
+  const lf = parseCandidateNotes(source);
+  const cr = parseCandidateNotes(withLineEnding(source, '\r'));
+  assert.deepEqual(
+    { skills: cr.skills, projects: cr.projects, constraints: cr.constraints, proof: cr.proof },
+    { skills: lf.skills, projects: lf.projects, constraints: lf.constraints, proof: lf.proof }
+  );
+});
+
+test('creates the same evidence and fit results from CR-only inputs', () => {
+  const job = [
+    '# Platform Engineer',
+    '## Requirements',
+    '- Node.js services',
+    '- Release automation',
+    '## Responsibilities',
+    '- Maintain build tooling',
+    '## Application',
+    '- Apply with a portfolio'
+  ].join('\n');
+  const candidate = [
+    'Skills:',
+    '- Node.js',
+    '- Release automation',
+    'Projects:',
+    '- Build tooling',
+    'Constraints:',
+    '- Remote only',
+    'Proof:',
+    '- Maintained Node.js services'
+  ].join('\n');
+
+  const lf = createApplicationBrief(job, candidate);
+  const cr = createApplicationBrief(withLineEnding(job, '\r'), withLineEnding(candidate, '\r'));
+  assert.deepEqual(cr.evidenceMap, lf.evidenceMap);
+  assert.equal(cr.fitScore, lf.fitScore);
+  assert.deepEqual(cr.candidateSummary, lf.candidateSummary);
 });
 
 test('parses company only from supported metadata forms', () => {

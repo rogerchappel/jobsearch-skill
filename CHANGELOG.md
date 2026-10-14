@@ -15,3 +15,9 @@ All notable changes to this project will be documented in this file.
 ## 0.1.0
 
 - Initial public release of the local-first job application brief skill and CLI.
+
+Package distribution intentionally excludes `package-lock.json`. The lockfile is
+used to make repository and CI installs reproducible; it is not needed by
+consumers of this dependency-free package, whose `engines` field declares the
+runtime requirement. The package smoke check validates the actual consumer
+artifact and its executable/library surface.
